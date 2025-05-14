@@ -1,0 +1,27 @@
+#1 ststemctl  service 服务器启动状态
+#lsof 查看端口是否存在
+#查看进程是否存在
+###压力过大 无法响应 服务down了但是上述的东西还在
+
+#测试端口是否响应   推荐 
+#main
+port_status(){
+
+temp_file='mktemp port_status.XXX'
+[ ! -x /usr/bin/telnet ]&&echo "telnet: not found command"&&exit 1
+
+#  测试端口是否响应
+(telnet $1 $2 << EOF
+quit
+EOF
+
+) &>$temp_file
+
+if egrep "\^]" &>/dev/null;then
+echo "$0 $2 is open"
+else
+echo "$1 $2 is close"
+fi
+rm -f $temp_file
+}
+port_status "$1" "$2"
